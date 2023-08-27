@@ -18,11 +18,14 @@
 </head>
 <body>
     <% for(let item of flights) { %>
-        <div>
-            <h1>Flight Direction : <%= item.route %></h1>
-            <h2>Flight Name : <%= item.flightName%></h1>
-            <h3><%= item.flightNumber%></h2>
-        </div>
+        <form action="/flights/<%=item.id%>" method="POST">
+            <div>
+                <h1>Flight Direction : <%= item.route %></h1>
+                <h2>Flight Name : <%= item.flightName%></h1>
+                <h3><%= item.flightNumber%></h2>
+                <button type="submit">Book</button>
+            </div>
+        </form>
     <% } %>
 </body>
 </html>
