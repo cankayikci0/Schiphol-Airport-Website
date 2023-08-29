@@ -3,7 +3,7 @@ const mysql = require('mysql2');
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: '*******',
+    password: '******',
     database: 'node-db'
 });
 
@@ -26,7 +26,7 @@ axios.get(apiUrl, { headers })
         // Handle the response data here
         db.execute('TRUNCATE TABLE flights');
         for(item of response.data.flights){
-            console.log(item);
+            //console.log(item);
             db.execute('INSERT INTO flights (id, actualLandingTime, estimatedLandingTime, flightDirection, flightName, flightNumber, route) VALUES (?, ?, ?, ?, ?, ?, ?)', [item.id, item.actualLandingTime, item.estimatedLandingTime, item.flightDirection, item.flightName, item.flightNumber, item.route.destinations]);
         };
     })

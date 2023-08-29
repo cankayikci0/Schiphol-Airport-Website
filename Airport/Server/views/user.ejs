@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Flights</title>
+</head>
+<body>
+    
+    <h1>Your Flights</h1>
+    <% for(let item of flights) { %>
+        <div>
+            <h1>Flight Direction : <%= item.route %></h1>
+            <h2>Flight Name : <%= item.flightName%></h1>
+            <h3><%= item.flightNumber%></h2>
+            <button type="submit">Book</button>
+        </div>
+    <% } %>
+
+</body>
+</html>
