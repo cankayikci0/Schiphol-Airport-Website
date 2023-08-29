@@ -64,5 +64,16 @@ app.get('/flights/your-flights', (req, res, next) => {
     });
 }
 );
+app.post('/flights/your-flights/:id', (req, res, next) => {
+
+    const flightId = req.params.id;
+
+    db.execute('DELETE FROM user WHERE id = ?', [flightId], (err, result, fields) => {
+        if(err) throw err;
+        res.status(200).redirect(302, '/flights/your-flights');
+    }
+    );
+}
+);
 
 app.listen(3000);
