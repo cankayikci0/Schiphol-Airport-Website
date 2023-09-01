@@ -1,5 +1,7 @@
 const db  = require('./db');
 
+const bcrypt = require('bcrypt');
+
 const express = require('express');
 const bodyParser = require('body-parser');
 
@@ -8,6 +10,7 @@ const bodyParser = require('body-parser');
 const app = express();
 
 
+app.use(bodyParser.urlencoded({extended: false}));
 
 
 app.set('view engine', 'ejs');
@@ -64,6 +67,7 @@ app.get('/flights/your-flights', (req, res, next) => {
     });
 }
 );
+
 app.post('/flights/your-flights/:id', (req, res, next) => {
 
     const flightId = req.params.id;
@@ -73,6 +77,29 @@ app.post('/flights/your-flights/:id', (req, res, next) => {
         res.status(200).redirect(302, '/flights/your-flights');
     }
     );
+}
+);
+
+app.get('/register', (req, res, next) => {
+    res.render('registration');
+}
+);
+
+app.post('/register', (req, res, next) => {
+const username = req.body.username;
+const password = req.body.password;
+
+bcrypt.hash(password, 12).then(hashedPassword => {
+    db.execute('INSERT INTO users (username, password_hash) VALUES (?, ?)', [username, hashedPassword]).then(result => {
+        res.status(200).redirect(302, '/');
+    }).catch(err => {
+        console.log(err);
+    });
+    
+}).catch(err => {
+    console.log(err);
+});
+
 }
 );
 
