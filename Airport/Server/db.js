@@ -23,8 +23,13 @@ const headers = {
 
 axios.get(apiUrl, { headers })
     .then(response => {
-        // Handle the response data here
+        
+        db.execute('SET FOREIGN_KEY_CHECKS = 0');
         db.execute('TRUNCATE TABLE flights');
+        db.execute('SET FOREIGN_KEY_CHECKS = 1');
+
+        // Handle the response data here
+
         for(item of response.data.flights){
             console.log(item);
             db.execute('INSERT INTO flights (id, actualLandingTime, estimatedLandingTime, flightDirection, flightName, flightNumber, route) VALUES (?, ?, ?, ?, ?, ?, ?)', [item.id, item.actualLandingTime, item.estimatedLandingTime, item.flightDirection, item.flightName, item.flightNumber, item.route.destinations]);
