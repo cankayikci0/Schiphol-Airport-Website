@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Flights</title>
+</head>
+<body>
+    
+    <h1>Your Flights</h1>
+    
+    <% for(let item of flights) { %>
+        <div>
+            <h2><i>Route : <%= item.route%></i></h2>
+            <% 
+            const originalDateString = item.actualLandingTime;
+            const originalDate = new Date(originalDateString);
+            
+            const formattedDate = originalDate.toLocaleString();
+            %>
+            <h2>Actual Landing Time : <%= formattedDate %></h2>
+
+        </div>
+    <% } %>
+
+</body>
+</html>

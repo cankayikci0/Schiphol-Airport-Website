@@ -120,15 +120,24 @@ app.post('/flights/:id', (req, res, next) => {
     });
 });
 
-// app.get('/flights/your-flights', (req, res, next) => {
-//     db.query('SELECT * FROM user', (err, result, fields) => {
+app.get('/flights/your-flights', (req, res, next) => {
+    const userId = req.user.id;
 
-//         if(err) throw err;
-//         res.render('user', {flights: result});
-//         console.log(result[0]);
-//     });
-// }
-// );
+    db.query('SELECT f.* FROM flights f JOIN user_flights uf ON f.id = uf.flight_id WHERE uf.user_id = ?', [userId], (err, result, fields) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).json({ error: 'An error occurred' });
+        }
+
+        if (result.length === 0) {
+            return res.json({ message: 'No flights found for the user' });
+        }
+
+        res.render('your-flights', {flights: result});
+    });
+});
+
+
 
 // app.post('/flights/your-flights/:id', (req, res, next) => {
 
