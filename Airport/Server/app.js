@@ -168,18 +168,30 @@ app.get('/login', (req, res, next) => {
 
 
 app.post('/register', async (req, res, next) => {
+
 const username = req.body.username;
 const password = req.body.password;
 
 const hashedPassword = await bcrypt.hash(password, 10);
 
-db.execute('INSERT INTO users (username, password_hash) VALUES (?, ?)', [username, hashedPassword], (err, result, fields) => {
-    if(err) throw err;
-    res.status(200).redirect(302, '/');
-}
-);
+const query = 'INSERT INTO users (username, password_hash) SELECT ?, ? WHERE NOT EXISTS (SELECT username FROM users WHERE username = ?)'
+const values = [username, hashedPassword, username];
 
-
+db.execute(query, values, (err, result, fields) => {
+    if (err) {
+      console.error('Error executing SQL query:', err);
+      // Handle other database-related errors here
+      res.status(500).send('Internal Server Error');
+    } else {
+      if (result.affectedRows === 1) {
+        // One row was inserted, indicating a successful registration
+        res.status(200).redirect(302, '/login');
+      } else {
+        // No rows were inserted, indicating a duplicate username
+        res.status(400).send('Username already exists');
+      }
+    }
+  });
 
 }
 );

@@ -1,9 +1,12 @@
 const mysql = require('mysql2');
+require('dotenv').config();
+
+
 
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: '****',
+    password: process.env.PASSWORD,
     database: 'node-db'
 });
 
@@ -24,15 +27,12 @@ const headers = {
 axios.get(apiUrl, { headers })
     .then(response => {
         
-        db.execute('SET FOREIGN_KEY_CHECKS = 0');
-        db.execute('TRUNCATE TABLE flights');
-        db.execute('SET FOREIGN_KEY_CHECKS = 1');
-
+    
         // Handle the response data here
 
         for(item of response.data.flights){
-            console.log(item);
-            db.execute('INSERT INTO flights (id, actualLandingTime, estimatedLandingTime, flightDirection, flightName, flightNumber, route) VALUES (?, ?, ?, ?, ?, ?, ?)', [item.id, item.actualLandingTime, item.estimatedLandingTime, item.flightDirection, item.flightName, item.flightNumber, item.route.destinations]);
+            // console.log(item);
+            db.execute('INSERT IGNORE INTO flights (id, actualLandingTime, estimatedLandingTime, scheduleDateTime,flightDirection, flightName, flightNumber, route) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [item.id, item.actualLandingTime, item.estimatedLandingTime, item.scheduleDateTime, item.flightDirection, item.flightName, item.flightNumber, item.route.destinations]);
         };
     })
     .catch(error => {

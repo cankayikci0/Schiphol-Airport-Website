@@ -17,9 +17,25 @@
     </style>
 </head>
 <body>
+    <% 
+    const compareDates = (d1) => {
+        let d2 = new Date();
+        let date1 = new Date(d1).getTime();
+        d2.setDate(d2.getDate() - 1);
+        let date2 = new Date(d2).getTime();
+        
+        if (date1 < date2) {
+          return false;
+        }  
+          return true;
+    
+      };
+    %>
     <% for(let item of flights) { %>
+        
         <form action="/flights/<%=item.id%>" method="POST">
             <div>
+                <h1>Time : <%= compareDates(item.scheduleDateTime) ? item.scheduleDateTime.toLocaleString() : 'Past Flight' %></h1>
                 <h1>Flight Direction : <%= item.route %></h1>
                 <h2>Flight Name : <%= item.flightName%></h1>
                 <h3><%= item.flightNumber%></h2>

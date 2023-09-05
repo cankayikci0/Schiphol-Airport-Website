@@ -1,9 +1,10 @@
+require('dotenv').config();
 // This code should be part of your Node.js server-side application
 const mysql = require('mysql2');
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: '****',
+    password: process.env.PASSWORD,
     database: 'node-db'
 });
 
