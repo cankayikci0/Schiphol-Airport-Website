@@ -119,9 +119,6 @@ app.post('/flights/:id', (req, res, next) => {
             }else{
                 res.send('Flight already added')
             }
-            
-            
-            
         });
     });
 });
@@ -138,7 +135,7 @@ app.get('/flights/your-flights', (req, res, next) => {
         if (result.length === 0) {
             return res.json({ message: 'No flights found for the user' });
         }
-
+        
         res.render('your-flights', {flights: result});
     });
 });
@@ -233,7 +230,7 @@ app.get('/flights/past/', (req, res, next) => {
 }
 );
 
-app.get('/flights/select/', (req, res, next) => {
+app.get('/select/', (req, res, next) => {
     db.execute('SELECT route FROM flights WHERE scheduleDateTime > NOW()', (err, result, fields) => {
         if(err) throw err;
         
@@ -251,17 +248,17 @@ app.get('/flights/select/', (req, res, next) => {
     });
 });
 
-app.post('/flights/select/', async (req, res, next) => {
-
-    
-    console.log('Request: ', req.body)
-    
-
-    db.execute('SELECT * FROM flights WHERE route = ? AND scheduleDateTime > NOW()', [route], (err, result, fields) => {
+app.post('/select/', (req, res, next) => {
+    const route = req.body.route;
+    //convert it to JSON format
+    const routeJSON = JSON.stringify([route]);
+    db.execute('SELECT * FROM flights WHERE route = ? AND scheduleDateTime > NOW()', [routeJSON], (err, result, fields) => {
         if(err) throw err;
         res.render('list', {flights: result});
     }
     );
 }
 );
+
+
 app.listen(3000);

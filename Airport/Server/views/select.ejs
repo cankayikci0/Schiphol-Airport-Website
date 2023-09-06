@@ -7,13 +7,13 @@
 </head>
 <body>
     <h1>Select Route</h1>
-    <form action="/flights/select/" method="POST">
+    <form action="/select/" method="POST">
         <select name="route" id="route">
             <% for(let item of routes) { %>
-                <option value="<%= item %>"><%= item %></option>
+                <option value="<%=item%>"><%= item %></option>
             <% } %>
         </select>
-        <button>Select</button>
+        <button type="submit">Select</button>
     </form>
 </body>
 </html>

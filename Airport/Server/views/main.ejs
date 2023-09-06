@@ -45,17 +45,16 @@
         <a href="/flights/your-flights">Click</a>
     </div>
     <% for(let item of flights) { %>
-        
         <form action="/flights/<%=item.id%>" method="POST">
             <div>
                 <h1>Time : <%= compareDates(item.scheduleDateTime) ? item.scheduleDateTime.toLocaleString() : 'Past Flight' %></h1>
                 <h1>Flight Direction : <%= item.route %></h1>
                 <h2>Flight Name : <%= item.flightName%></h1>
-                <h3><%= item.flightNumber%></h2>
+                <h3>Flight Number : <%= item.flightNumber%></h3>
+                <h3>Baggage Claim : <%= item.baggageClaim == null ? 1 : JSON.parse(item.baggageClaim)%></h3>
                 <button type="submit">Book</button>
             </div>
         </form>
     <% } %>
-    
 </body>
 </html>

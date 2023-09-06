@@ -68,6 +68,7 @@
             <form action="/flights/your-flights/<%= item.id %>" method="post">
                 <h2><i>Route : <%= item.route%></i></h2>
                 <h2>Scheduled Date Time : <%= item.scheduleDateTime.toLocaleString() %></h2>
+                <h2>Baggage Claim : <%= item.baggageClaim == null ? 1 : item.baggageClaim%></h2>
                 <button>Delete</button>
                 <hr>
             </form>
