@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <% for(let item of flights) { %>
+        <form action="/flights/<%=item.id%>" method="POST">
+            <div>
+                <h1>Time : <%= compareDates(item.scheduleDateTime) ? item.scheduleDateTime.toLocaleString() : 'Past Flight' %></h1>
+                <h1>Flight Direction : <%= item.route %></h1>
+                <h2>Flight Name : <%= item.flightName%></h1>
+                <h3><%= item.flightNumber%></h2>
+                <button type="submit">Book</button>
+            </div>
+        </form>
+    <% } %>
+</body>
+</html>

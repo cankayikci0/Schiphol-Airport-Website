@@ -4,24 +4,85 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Flights</title>
+    <style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f0f0f0;
+    }
+
+    h1 {
+        text-align: center;
+        color: #333;
+    }
+
+    div {
+        border: 1px solid #ccc;
+        margin: 10px;
+        padding: 10px;
+        background-color: #fff;
+    }
+
+    h2 {
+        font-style: italic;
+        color: #666;
+    }
+
+    button {
+        background-color: #e74c3c;
+        color: #fff;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #c0392b;
+    }
+
+    hr {
+        border: 1px solid #ccc;
+    }
+</style>
 </head>
 <body>
-    
+    <%
+    const nowFlights = [];
+    var yesterday = new Date()
+    yesterday.setDate(yesterday.getDate() - 1)
+    for(let item of flights) {
+        if(item.scheduleDateTime > new Date()) {
+            nowFlights.push(item);
+        }
+    }
+    const pastFlights = [];
+    for(let item of flights) {
+        if(item.scheduleDateTime < new Date()) {
+            pastFlights.push(item);
+        }
+    }
+    %>
     <h1>Your Flights</h1>
     
-    <% for(let item of flights) { %>
+    <% if(nowFlights.length !== 0){ for(let item of nowFlights) { %>
+        <div>
+            <form action="/flights/your-flights/<%= item.id %>" method="post">
+                <h2><i>Route : <%= item.route%></i></h2>
+                <h2>Scheduled Date Time : <%= item.scheduleDateTime.toLocaleString() %></h2>
+                <button>Delete</button>
+                <hr>
+            </form>
+        </div>
+    <% }}else{ %>
+        <h2 style="text-align: center;"> ---- No flights ----</h2>
+    <% } %>
+        
+    <h1>Past Flights</h1>
+    <% for(let item of pastFlights) { %>
         <div>
             <h2><i>Route : <%= item.route%></i></h2>
-            <% 
-            const originalDateString = item.actualLandingTime;
-            const originalDate = new Date(originalDateString);
-            
-            const formattedDate = originalDate.toLocaleString();
-            %>
-            <h2>Actual Landing Time : <%= formattedDate %></h2>
-
+            <h2>Scheduled Date Time : <%= item.scheduleDateTime.toLocaleString() %></h2>
+            <hr>
         </div>
     <% } %>
-
 </body>
 </html>

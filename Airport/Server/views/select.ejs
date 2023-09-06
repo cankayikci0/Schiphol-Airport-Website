@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Select Route</h1>
+    <form action="/flights/select/" method="POST">
+        <select name="route" id="route">
+            <% for(let item of routes) { %>
+                <option value="<%= item %>"><%= item %></option>
+            <% } %>
+        </select>
+        <button>Select</button>
+    </form>
+</body>
+</html>

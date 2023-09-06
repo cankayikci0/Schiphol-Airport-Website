@@ -71,7 +71,7 @@ app.get('/',(req,res,next) => {
     if(!req.isAuthenticated()){
         res.redirect('/login');
     }
-    db.query('SELECT * FROM flights', (err, result, fields) => {
+    db.query('SELECT * FROM flights WHERE scheduleDateTime > NOW()', (err, result, fields) => {
         if(err) throw err;
         //console.log(result);
         res.render('main', {flights: result});
@@ -89,8 +89,6 @@ app.post('/flights/:id', (req, res, next) => {
 
     //console.log(userId);
     
-
-    
     // Fetch flight data based on the provided ID
     db.execute('SELECT * FROM flights WHERE id = ?', [flightId], (err, result, fields) => {
         if (err) {
@@ -106,15 +104,23 @@ app.post('/flights/:id', (req, res, next) => {
         console.log(flightData);
         console.log(req.user.id);
 
+        const query = 'INSERT INTO user_flights (user_id, flight_id) SELECT ?, ? WHERE NOT EXISTS (SELECT flight_id FROM user_flights WHERE flight_id = ?)'
+        const values = [req.user.id, flightData.id, flightData.id];
+
         // Insert flight data into the user table
-        db.execute('INSERT INTO user_flights (user_id, flight_id) VALUES(?,?)', [req.user.id, flightData.id],(err, insertResult) => {
+        db.execute(query, values,(err, insertResult) => {
             if (err) {
-                console.error(err);
-                return res.status(500).send('You have already booked this flight');
-                console.log(err.message);
+                console.error('Error executing SQL query:', err);
+        //      Handle other database-related errors here
+                res.status(500).send('Internal Server Error');
+            }if(insertResult.affectedRows === 1){
+                res.status(200).redirect(302, '/');
+                console.log('Flight data inserted successfully');
+            }else{
+                res.send('Flight already added')
             }
-            console.log('Flight data inserted successfully');
-            res.status(200).redirect(302, '/');
+            
+            
             
         });
     });
@@ -139,17 +145,18 @@ app.get('/flights/your-flights', (req, res, next) => {
 
 
 
-// app.post('/flights/your-flights/:id', (req, res, next) => {
+app.post('/flights/your-flights/:id', (req, res, next) => {
 
-//     const flightId = req.params.id;
+    const flightId = req.params.id;
+    const userID = req.user.id;
 
-//     db.execute('DELETE FROM user WHERE id = ?', [flightId], (err, result, fields) => {
-//         if(err) throw err;
-//         res.status(200).redirect(302, '/flights/your-flights');
-//     }
-//     );
-// }
-// );
+    db.execute('DELETE FROM user_flights WHERE user_id = ? AND flight_id = ?', [userID ,flightId], (err, result, fields) => {
+        if(err) throw err;
+        res.status(200).redirect(302, '/flights/your-flights');
+    }
+    );
+}
+);
 
 app.get('/register', (req, res, next) => {
     res.render('registration');
@@ -177,6 +184,20 @@ const hashedPassword = await bcrypt.hash(password, 10);
 const query = 'INSERT INTO users (username, password_hash) SELECT ?, ? WHERE NOT EXISTS (SELECT username FROM users WHERE username = ?)'
 const values = [username, hashedPassword, username];
 
+if (err) {
+      console.error('Error executing SQL query:', err);
+      // Handle other database-related errors here
+      res.status(500).send('Internal Server Error');
+    } else {
+      if (result.affectedRows === 1) {
+        // One row was inserted, indicating a successful registration
+        res.status(200).redirect(302, '/login');
+      } else {
+        // No rows were inserted, indicating a duplicate username
+        res.status(400).send('Username already exists');
+      }
+    }
+
 db.execute(query, values, (err, result, fields) => {
     if (err) {
       console.error('Error executing SQL query:', err);
@@ -202,4 +223,45 @@ app.post('/login', passport.authenticate('local', {
 })
 );
 
+app.get('/flights/past/', (req, res, next) => {
+
+    db.query('SELECT * FROM flights WHERE scheduleDateTime < NOW()', (err, result, fields) => {
+        if(err) throw err;
+        res.render('past-flights', {flights: result});
+    }
+    );
+}
+);
+
+app.get('/flights/select/', (req, res, next) => {
+    db.execute('SELECT route FROM flights WHERE scheduleDateTime > NOW()', (err, result, fields) => {
+        if(err) throw err;
+        
+        // Create an empty Set to store the unique routes
+        const uniqueRoutes = new Set();
+
+        // Iterate through the result and add parsed routes to the Set
+        result.forEach((row) => {
+            const routeArray = JSON.parse(row.route);
+            routeArray.forEach((route) => {
+                uniqueRoutes.add(route);
+            });
+        });
+        res.render('select', {routes: uniqueRoutes});
+    });
+});
+
+app.post('/flights/select/', async (req, res, next) => {
+
+    
+    console.log('Request: ', req.body)
+    
+
+    db.execute('SELECT * FROM flights WHERE route = ? AND scheduleDateTime > NOW()', [route], (err, result, fields) => {
+        if(err) throw err;
+        res.render('list', {flights: result});
+    }
+    );
+}
+);
 app.listen(3000);

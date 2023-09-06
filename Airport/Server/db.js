@@ -24,20 +24,23 @@ const headers = {
     'ResourceVersion': 'v4'
 };
 
-axios.get(apiUrl, { headers })
+for(let i = 0; i < 220; i++){
+axios.get(`https://api.schiphol.nl/public-flights/flights?includedelays=false&page=${i}&sort=%2BscheduleTime`, { headers })
     .then(response => {
         
     
         // Handle the response data here
-
+        
         for(item of response.data.flights){
-            // console.log(item);
+            console.log(item);
             db.execute('INSERT IGNORE INTO flights (id, actualLandingTime, estimatedLandingTime, scheduleDateTime,flightDirection, flightName, flightNumber, route) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [item.id, item.actualLandingTime, item.estimatedLandingTime, item.scheduleDateTime, item.flightDirection, item.flightName, item.flightNumber, item.route.destinations]);
         };
     })
     .catch(error => {
         console.error('Error:', error);
     });
+
+};
 
 module.exports = db;
 
